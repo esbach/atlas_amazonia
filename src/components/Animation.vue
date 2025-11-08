@@ -335,6 +335,33 @@ export default {
       }
       return [refs]
     },
+    getOutlineDurationMultiplier() {
+      if (typeof window === 'undefined') {
+        return 1
+      }
+
+      const baseWidth = Number.isFinite(this.width) && this.width > 0 ? this.width : 960
+      if (baseWidth <= 0) {
+        return 1
+      }
+
+      const svg = this.$el ? this.$el.querySelector('.geojson-svg') : null
+      if (!svg) {
+        return 1
+      }
+
+      const rect = svg.getBoundingClientRect()
+      if (!rect || rect.width <= 0) {
+        return 1
+      }
+
+      const multiplier = baseWidth / rect.width
+      if (!Number.isFinite(multiplier) || multiplier <= 1) {
+        return 1
+      }
+
+      return Math.min(multiplier, 4)
+    },
     startOutlineAnimation() {
       this.$nextTick(() => {
         const paths = this.getPathElements()
@@ -346,6 +373,8 @@ export default {
 
         const duration = Math.max(0, this.outlineDuration)
         const delay = Math.max(0, this.outlineDelay)
+        const durationMultiplier = this.getOutlineDurationMultiplier()
+        const effectiveDuration = duration * durationMultiplier
 
         paths.forEach((path) => {
           const length = path.getTotalLength()
@@ -359,7 +388,7 @@ export default {
         }
 
         paths.forEach((path) => {
-          path.style.transition = `stroke-dashoffset ${duration}ms ease ${delay}ms`
+          path.style.transition = `stroke-dashoffset ${effectiveDuration}ms ease ${delay}ms`
           path.style.strokeDashoffset = '0'
         })
 
@@ -368,7 +397,7 @@ export default {
         if (this.outlineAnimationTimeout) {
           clearTimeout(this.outlineAnimationTimeout)
         }
-        const totalTime = duration + delay
+        const totalTime = effectiveDuration + delay
         this.outlineAnimationTimeout = setTimeout(() => {
           this.outlineAnimationCompleted = true
           this.restartFillAnimation()

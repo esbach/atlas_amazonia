@@ -129,8 +129,40 @@
     </main>
 
     <footer class="footer">
-      <div class="container">
-        <p>{{ t.footer.replace('{year}', currentYear) }}</p>
+      <div class="container footer-content">
+        <span class="footer-brand">© 2025 | Amazon Atlas</span>
+        <div class="footer-social" role="navigation" aria-label="Footer">
+          <a
+            href="https://www.instagram.com/amazonatlas"
+            class="footer-social-link"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="Visit Amazon Atlas on Instagram"
+          >
+            <span class="sr-only">Instagram</span>
+            <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm10.25 1.5a1.25 1.25 0 1 1 0 2.5a1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6a3 3 0 0 0 0-6z"
+                fill="currentColor"
+              />
+            </svg>
+          </a>
+          <a
+            href="https://www.linkedin.com/company/amazon-atlas"
+            class="footer-social-link"
+            target="_blank"
+            rel="noreferrer noopener"
+            aria-label="Visit Amazon Atlas on LinkedIn"
+          >
+            <span class="sr-only">LinkedIn</span>
+            <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M4.98 3.5a2 2 0 1 1 0 4a2 2 0 0 1 0-4zM3 9h3.96v12H3zM9.75 9H13v1.86h.05c.45-.86 1.56-1.78 3.2-1.78C19.14 9.08 21 10.8 21 14.07V21h-3.96v-6.25c0-1.49-.53-2.5-1.86-2.5c-1.02 0-1.63.69-1.9 1.35c-.1.24-.12.57-.12.9V21H9.75z"
+                fill="currentColor"
+              />
+            </svg>
+          </a>
+        </div>
       </div>
     </footer>
   </div>
