@@ -355,12 +355,16 @@ export default {
         return 1
       }
 
-      const multiplier = baseWidth / rect.width
+      let multiplier = baseWidth / rect.width
       if (!Number.isFinite(multiplier) || multiplier <= 1) {
         return 1
       }
 
-      return Math.min(multiplier, 4)
+      if (rect.width <= 600) {
+        multiplier *= 0.3
+      }
+
+      return Math.min(multiplier, 6)
     },
     startOutlineAnimation() {
       this.$nextTick(() => {
