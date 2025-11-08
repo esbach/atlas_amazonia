@@ -177,11 +177,15 @@ export default {
         { code: 'es', label: 'ES' },
         { code: 'pt', label: 'PT' }
       ],
-      textRevealTimeout: null
+      textRevealTimeout: null,
+      supportsHover: false,
+      hoverMediaQuery: null,
+      hoverMediaQueryListener: null
     }
   },
   mounted() {
     this.initializeTheme()
+    this.evaluateHoverSupport()
     document.addEventListener('click', this.onDocumentClick)
     document.addEventListener('keydown', this.onDocumentKeydown)
     this.loadGeoJSON()
@@ -191,6 +195,13 @@ export default {
     document.removeEventListener('click', this.onDocumentClick)
     document.removeEventListener('keydown', this.onDocumentKeydown)
     this.clearTextRevealTimeout()
+    if (this.hoverMediaQuery && this.hoverMediaQueryListener) {
+      if (typeof this.hoverMediaQuery.removeEventListener === 'function') {
+        this.hoverMediaQuery.removeEventListener('change', this.hoverMediaQueryListener)
+      } else if (typeof this.hoverMediaQuery.removeListener === 'function') {
+        this.hoverMediaQuery.removeListener(this.hoverMediaQueryListener)
+      }
+    }
   },
   computed: {
     t() {
@@ -262,6 +273,35 @@ export default {
 
       this.theme = preferredTheme
       this.applyTheme(preferredTheme)
+    },
+    evaluateHoverSupport() {
+      if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+        this.supportsHover = false
+        return
+      }
+
+      if (this.hoverMediaQuery && this.hoverMediaQueryListener) {
+        if (typeof this.hoverMediaQuery.removeEventListener === 'function') {
+          this.hoverMediaQuery.removeEventListener('change', this.hoverMediaQueryListener)
+        } else if (typeof this.hoverMediaQuery.removeListener === 'function') {
+          this.hoverMediaQuery.removeListener(this.hoverMediaQueryListener)
+        }
+      }
+
+      const mediaQuery = window.matchMedia('(hover: hover) and (pointer: fine)')
+      this.hoverMediaQuery = mediaQuery
+      this.supportsHover = mediaQuery.matches
+
+      const handler = (event) => {
+        this.supportsHover = event.matches
+      }
+      this.hoverMediaQueryListener = handler
+
+      if (typeof mediaQuery.addEventListener === 'function') {
+        mediaQuery.addEventListener('change', handler)
+      } else if (typeof mediaQuery.addListener === 'function') {
+        mediaQuery.addListener(handler)
+      }
     },
     applyTheme(themeName = this.theme) {
       if (typeof document !== 'undefined') {
@@ -341,9 +381,11 @@ export default {
       this.isLanguageMenuOpen = !this.isLanguageMenuOpen
     },
     openLanguageMenu() {
+      if (!this.supportsHover) return
       this.isLanguageMenuOpen = true
     },
     closeLanguageMenu() {
+      if (!this.supportsHover) return
       this.isLanguageMenuOpen = false
     },
     onLanguageFocusOut(event) {
