@@ -1,0 +1,57 @@
+{
+  "en": {
+    "siteTitle": "Amazon Atlas",
+    "nav": {
+      "home": "home",
+      "about": "about",
+      "contact": "contact"
+    },
+    "aboutText": "Atlas Amazónico is a collaborative initiative led by Colorado State University and Fundación EcoCiencia to strengthen how conservation areas and Indigenous stewardship are recognized and tracked in the Amazon. The project is developing a web-based spatial platform for mapping and validating protected and conserved areas in Ecuador, while co-creating with Indigenous Peoples a culturally grounded stewardship assessment tool that reflects their governance systems and care practices. Through participatory design, regional partnerships, and policy integration, the project seeks to improve data transparency, inform equitable conservation finance, and ensure Indigenous contributions are fully recognized in national and global biodiversity frameworks.",
+    "contact": {
+      "title": "Contact",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "sendButton": "Send Message",
+      "successMessage": "Thank you! Your message has been sent."
+    },
+    "footer": "© {year} | Amazon Atlas"
+  },
+  "es": {
+    "siteTitle": "Atlas Amazónico",
+    "nav": {
+      "home": "inicio",
+      "about": "acerca de",
+      "contact": "contacto"
+    },
+    "aboutText": "Atlas Amazónico es una iniciativa colaborativa dirigida por la Universidad Estatal de Colorado y la Fundación EcoCiencia para fortalecer cómo se reconocen y rastrean las áreas de conservación y la administración indígena en el Amazonas. El proyecto está desarrollando una plataforma espacial basada en web para mapear y validar áreas protegidas y conservadas en Ecuador, mientras co-crea con los Pueblos Indígenas una herramienta de evaluación de administración culturalmente fundamentada que refleja sus sistemas de gobernanza y prácticas de cuidado. A través del diseño participativo, las asociaciones regionales y la integración de políticas, el proyecto busca mejorar la transparencia de los datos, informar sobre las finanzas de conservación equitativas y asegurar que las contribuciones indígenas sean plenamente reconocidas en los marcos de biodiversidad nacionales y globales.",
+    "contact": {
+      "title": "Contacto",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "message": "Mensaje",
+      "sendButton": "Enviar mensaje",
+      "successMessage": "¡Gracias! Su mensaje ha sido enviado."
+    },
+    "footer": "© {year} | Atlas Amazónico"
+  },
+  "pt": {
+    "siteTitle": "Atlas Amazônico",
+    "nav": {
+      "home": "início",
+      "about": "sobre",
+      "contact": "contato"
+    },
+    "aboutText": "Atlas Amazônico é uma iniciativa colaborativa liderada pela Colorado State University e pela Fundación EcoCiencia para fortalecer como as áreas de conservação e a administração indígena são reconhecidas e rastreadas na Amazônia. O projeto está desenvolvendo uma plataforma espacial baseada na web para mapear e validar áreas protegidas e conservadas no Equador, enquanto co-cria com os Povos Indígenas uma ferramenta de avaliação de administração culturalmente fundamentada que reflete seus sistemas de governança e práticas de cuidado. Por meio de design participativo, parcerias regionais e integração de políticas, o projeto busca melhorar a transparência dos dados, informar sobre o financiamento equitativo da conservação e garantir que as contribuições indígenas sejam plenamente reconhecidas nos marcos de biodiversidade nacionais e globais.",
+    "contact": {
+      "title": "Contato",
+      "name": "Nome",
+      "email": "E-mail",
+      "message": "Mensagem",
+      "sendButton": "Enviar mensagem",
+      "successMessage": "Obrigado! Sua mensagem foi enviada."
+    },
+    "footer": "© {year} | Atlas Amazônico"
+  }
+}
+
