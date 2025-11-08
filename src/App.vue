@@ -14,7 +14,6 @@
         </h1>
         <nav class="nav">
           <a href="#about" @click.prevent="activeSection = 'about'" :class="{ active: activeSection === 'about' }">{{ t.nav.about }}</a>
-          <a href="#contact" @click.prevent="activeSection = 'contact'" :class="{ active: activeSection === 'contact' }">{{ t.nav.contact }}</a>
           <button
             type="button"
             class="icon-button theme-toggle"
@@ -96,36 +95,13 @@
         </div>
       </section>
 
-      <section v-if="activeSection === 'about'" class="section">
-        <div class="container">
+      <section v-if="activeSection === 'about'" class="section about-section">
+        <div class="container about-container">
           <h2>{{ t.nav.about }}</h2>
           <p>{{ t.aboutText }}</p>
         </div>
       </section>
 
-      <section v-if="activeSection === 'contact'" class="section">
-        <div class="container">
-          <h2>{{ t.contact.title }}</h2>
-          <form @submit.prevent="handleSubmit" class="contact-form">
-            <div class="form-group">
-              <label for="name">{{ t.contact.name }}</label>
-              <input type="text" id="name" v-model="form.name" required>
-            </div>
-            <div class="form-group">
-              <label for="email">{{ t.contact.email }}</label>
-              <input type="email" id="email" v-model="form.email" required>
-            </div>
-            <div class="form-group">
-              <label for="message">{{ t.contact.message }}</label>
-              <textarea id="message" v-model="form.message" rows="5" required></textarea>
-            </div>
-            <button type="submit" class="btn">{{ t.contact.sendButton }}</button>
-          </form>
-          <div v-if="formSubmitted" class="success-message">
-            {{ t.contact.successMessage }}
-          </div>
-        </div>
-      </section>
     </main>
 
     <footer class="footer">
@@ -133,16 +109,18 @@
         <span class="footer-brand">© 2025 | Amazon Atlas</span>
         <div class="footer-social" role="navigation" aria-label="Footer">
           <a
-            href="https://www.instagram.com/amazonatlas"
+            href="https://github.com/amazonatlas"
             class="footer-social-link"
             target="_blank"
             rel="noreferrer noopener"
-            aria-label="Visit Amazon Atlas on Instagram"
+            aria-label="Visit Amazon Atlas on GitHub"
           >
-            <span class="sr-only">Instagram</span>
+            <span class="sr-only">GitHub</span>
             <svg class="footer-icon" viewBox="0 0 24 24" aria-hidden="true">
               <path
-                d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm10.25 1.5a1.25 1.25 0 1 1 0 2.5a1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6a3 3 0 0 0 0-6z"
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M12 2a10 10 0 0 0-3.16 19.48c.5.09.68-.21.68-.47c0-.23-.01-.85-.01-1.67c-2.5.46-3.17-.61-3.37-1.17c-.11-.29-.6-1.17-1.03-1.41c-.35-.19-.85-.66-.01-.67c.78-.01 1.34.72 1.52 1.02c.89 1.5 2.31 1.07 2.88.82c.09-.65.35-1.07.63-1.32c-2.22-.25-4.55-1.11-4.55-4.95c0-1.09.39-1.99 1.03-2.69c-.1-.25-.45-1.27.1-2.65c0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.9-1.29 2.74-1.02 2.74-1.02c.55 1.38.2 2.4.1 2.65c.64.7 1.02 1.6 1.02 2.69c0 3.85-2.34 4.7-4.57 4.95c.36.31.68.91.68 1.84c0 1.33-.01 2.4-.01 2.73c0 .26.18.56.69.47A10 10 0 0 0 12 2"
                 fill="currentColor"
               />
             </svg>
@@ -198,13 +176,7 @@ export default {
         { code: 'en', label: 'EN' },
         { code: 'es', label: 'ES' },
         { code: 'pt', label: 'PT' }
-      ],
-      form: {
-        name: '',
-        email: '',
-        message: ''
-      },
-      formSubmitted: false
+      ]
     }
   },
   mounted() {
@@ -329,21 +301,6 @@ export default {
       } catch (error) {
         console.error('Error loading polygons GeoJSON:', error)
       }
-    },
-    handleSubmit() {
-      // Handle form submission
-      console.log('Form submitted:', this.form)
-      this.formSubmitted = true
-      
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        this.form = {
-          name: '',
-          email: '',
-          message: ''
-        }
-        this.formSubmitted = false
-      }, 3000)
     },
     onFillProgress(progress) {
       this.fillProgress = Math.min(Math.max(progress, 0), 1)

@@ -224,7 +224,7 @@ body.theme-dark .language-option:focus-visible {
     color: var(--text-color);
     font-size: 0.85rem;
     padding: 0.45rem 0.65rem;
-    text-align: left;
+    text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     cursor: pointer;
@@ -290,6 +290,29 @@ body.theme-dark .language-option.active {
     padding: 1rem;
     min-height: 0;
 }
+
+.about-section .about-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    max-width: 50%;
+    text-align: left;
+    margin-inline: auto;
+}
+
+.about-section .about-container h2 {
+    font-size: clamp(1.75rem, 1.2vw + 1.4rem, 2.15rem);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+
+.about-section .about-container p {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--text-light);
+}
+
 
 /* Home Section - Centered Image */
 .home-section {
@@ -364,7 +387,6 @@ body.theme-dark .geojson-overlay-text {
     font-weight: 400;
     color: var(--text-color);
     letter-spacing: 0.04em;
-    text-transform: uppercase;
 }
 
 .footer-social {
@@ -483,14 +505,9 @@ body.theme-dark .footer-social-link {
         padding: 1rem 1.25rem;
     }
 
-    .form-group {
-        margin-bottom: 0.75rem;
-    }
-
-    .form-group input,
-    .form-group textarea {
-        padding: 0.5rem;
-        font-size: 0.9rem;
+    .about-section .about-container {
+        max-width: 90%;
+        gap: 1rem;
     }
 
     .language-menu-list {
