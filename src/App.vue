@@ -169,7 +169,7 @@ export default {
       polygonsGeoJSON: null,
       fillProgress: 0,
       isTextVisible: false,
-      theme: 'light',
+      theme: 'dark',
       isLanguageMenuOpen: false,
       skipTextTransition: false,
       languages: [
@@ -249,14 +249,12 @@ export default {
   },
   methods: {
     initializeTheme() {
-      let preferredTheme = 'light'
+      let preferredTheme = 'dark'
 
       try {
         const storedTheme = localStorage.getItem('theme')
         if (storedTheme === 'light' || storedTheme === 'dark') {
           preferredTheme = storedTheme
-        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          preferredTheme = 'dark'
         }
       } catch (error) {
         console.warn('Unable to read stored theme preference:', error)
@@ -351,7 +349,9 @@ export default {
     onLanguageFocusOut(event) {
       const menu = this.$refs.languageMenu
       if (!menu) return
-      if (menu.contains(event.relatedTarget)) {
+      const nextFocusTarget = event.relatedTarget
+      if (!nextFocusTarget) return
+      if (menu.contains(nextFocusTarget)) {
         return
       }
       this.isLanguageMenuOpen = false
