@@ -176,7 +176,8 @@ export default {
         { code: 'en', label: 'EN' },
         { code: 'es', label: 'ES' },
         { code: 'pt', label: 'PT' }
-      ]
+      ],
+      textRevealTimeout: null
     }
   },
   mounted() {
@@ -189,6 +190,7 @@ export default {
   beforeUnmount() {
     document.removeEventListener('click', this.onDocumentClick)
     document.removeEventListener('keydown', this.onDocumentKeydown)
+    this.clearTextRevealTimeout()
   },
   computed: {
     t() {
@@ -227,6 +229,7 @@ export default {
         this.restartHomeSequence()
       } else {
         this.isTextVisible = false
+        this.clearTextRevealTimeout()
       }
     },
     theme(newTheme) {
@@ -268,6 +271,7 @@ export default {
       }
     },
     hideTextInstantly() {
+      this.clearTextRevealTimeout()
       this.skipTextTransition = true
       this.isTextVisible = false
       this.$nextTick(() => {
@@ -284,6 +288,9 @@ export default {
         const response = await fetch('/Amazon.geojson')
         const data = await response.json()
         this.amazonGeoJSON = data
+        if (this.activeSection === 'home') {
+          this.scheduleTextReveal()
+        }
       } catch (error) {
         console.error('Error loading GeoJSON:', error)
       }
@@ -305,6 +312,7 @@ export default {
     onFillProgress(progress) {
       this.fillProgress = Math.min(Math.max(progress, 0), 1)
       if (!this.isTextVisible && this.fillProgress >= 1) {
+        this.clearTextRevealTimeout()
         this.isTextVisible = true
       }
     },
@@ -322,11 +330,13 @@ export default {
         this.isTextVisible = false
       }
       this.fillProgress = 0
+      this.clearTextRevealTimeout()
       this.$nextTick(() => {
         const animationComponent = this.$refs.animation
         if (animationComponent && typeof animationComponent.restartAnimations === 'function') {
           animationComponent.restartAnimations()
         }
+        this.scheduleTextReveal()
       })
     },
     toggleLanguageMenu() {
@@ -361,6 +371,35 @@ export default {
     onDocumentKeydown(event) {
       if (event.key === 'Escape' && this.isLanguageMenuOpen) {
         this.isLanguageMenuOpen = false
+      }
+    },
+    scheduleTextReveal() {
+      if (this.activeSection !== 'home' || !this.amazonGeoJSON || this.isTextVisible) {
+        return
+      }
+
+      const animationComponent = this.$refs.animation
+      const baseDuration =
+        animationComponent && typeof animationComponent.outlineDuration === 'number'
+          ? animationComponent.outlineDuration
+          : 1800
+      const baseDelay =
+        animationComponent && typeof animationComponent.outlineDelay === 'number'
+          ? animationComponent.outlineDelay
+          : 200
+
+      const delay = Math.max(0, baseDuration + baseDelay)
+
+      this.clearTextRevealTimeout()
+      this.textRevealTimeout = setTimeout(() => {
+        this.isTextVisible = true
+        this.textRevealTimeout = null
+      }, delay)
+    },
+    clearTextRevealTimeout() {
+      if (this.textRevealTimeout) {
+        clearTimeout(this.textRevealTimeout)
+        this.textRevealTimeout = null
       }
     }
   }

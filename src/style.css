@@ -383,7 +383,7 @@ body.theme-dark .geojson-overlay-text {
 }
 
 .footer-brand {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 400;
     color: var(--text-color);
     letter-spacing: 0.04em;
@@ -487,18 +487,13 @@ body.theme-dark .footer-social-link {
     }
 
     .footer .container {
-        flex-direction: row;
+        flex-direction: column-reverse;
         align-items: center;
-        justify-content: space-between;
-        gap: var(--nav-item-gap);
+        gap: 0.75rem;
     }
 
     .footer-social {
         gap: 0.65rem;
-    }
-
-    .footer p {
-        font-size: 0.8rem;
     }
 
     .section .container {
@@ -568,6 +563,12 @@ body.theme-dark .footer-social-link {
 
     .language-menu-list {
         min-width: 120px;
+    }
+
+    .geojson-overlay-text {
+        max-width: 60%;
+        font-size: 0.6rem;
+        line-height: 1.2;
     }
 }
 
