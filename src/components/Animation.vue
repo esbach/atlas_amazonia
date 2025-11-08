@@ -436,9 +436,12 @@ export default {
       if (!shouldAnimate) {
         this.currentFillOpacity = this.pathFill === 'none' ? 0 : target
         this.fillAnimationStart = null
-        const progress =
-          target > 0 ? Math.min(this.currentFillOpacity / target, 1) : this.currentFillOpacity > 0 ? 1 : 0
-        this.$emit('fill-progress', progress)
+        if (target === 0 || this.pathFill === 'none') {
+          this.$emit('fill-progress', 1)
+        } else {
+          const progress = Math.min(this.currentFillOpacity / target, 1)
+          this.$emit('fill-progress', progress)
+        }
         return
       }
 
@@ -458,7 +461,7 @@ export default {
 
       if (duration === 0) {
         this.currentFillOpacity = target
-        const progress = target > 0 ? 1 : 0
+        const progress = target > 0 ? 1 : 1
         this.$emit('fill-progress', progress)
         this.fillRafId = null
         return
@@ -466,7 +469,7 @@ export default {
 
       const progress = Math.min(1, elapsed / duration)
       this.currentFillOpacity = target * progress
-      const emittedProgress = target > 0 ? Math.min(this.currentFillOpacity / target, 1) : 0
+      const emittedProgress = target > 0 ? Math.min(this.currentFillOpacity / target, 1) : 1
       this.$emit('fill-progress', emittedProgress)
 
       if (progress >= 1) {

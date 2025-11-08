@@ -15,16 +15,53 @@
         <nav class="nav">
           <a href="#about" @click.prevent="activeSection = 'about'" :class="{ active: activeSection === 'about' }">{{ t.nav.about }}</a>
           <a href="#contact" @click.prevent="activeSection = 'contact'" :class="{ active: activeSection === 'contact' }">{{ t.nav.contact }}</a>
-          <div class="language-switcher">
-            <button 
-              v-for="lang in languages" 
-              :key="lang.code"
-              @click="currentLanguage = lang.code"
-              :class="{ active: currentLanguage === lang.code }"
-              class="lang-btn"
+          <button
+            type="button"
+            class="icon-button theme-toggle"
+            @click="toggleTheme"
+            :aria-label="theme === 'dark' ? t.theme.switchToLight : t.theme.switchToDark"
+          >
+            <span class="sr-only">{{ theme === 'dark' ? t.theme.switchToLight : t.theme.switchToDark }}</span>
+            <SunIcon v-if="theme === 'dark'" class="icon theme-icon" aria-hidden="true" />
+            <MoonIcon v-else class="icon theme-icon" aria-hidden="true" />
+          </button>
+          <div
+            class="language-menu"
+            ref="languageMenu"
+            @mouseenter="openLanguageMenu"
+            @mouseleave="closeLanguageMenu"
+            @focusin="openLanguageMenu"
+            @focusout="onLanguageFocusOut"
+          >
+            <button
+              type="button"
+              class="icon-button language-toggle"
+              @click="toggleLanguageMenu"
+              :aria-expanded="isLanguageMenuOpen.toString()"
+              :aria-haspopup="'listbox'"
             >
-              {{ lang.label }}
+              <span class="language-label">{{ currentLanguageLabel }}</span>
             </button>
+            <transition name="fade">
+              <ul
+                v-if="isLanguageMenuOpen"
+                class="language-menu-list"
+                role="listbox"
+                :aria-activedescendant="`lang-${currentLanguage}`"
+              >
+                <li v-for="lang in languages" :key="lang.code">
+                  <button
+                    type="button"
+                    :id="`lang-${lang.code}`"
+                    class="language-option"
+                    :class="{ active: currentLanguage === lang.code }"
+                    @click="selectLanguage(lang.code)"
+                  >
+                    {{ lang.label }}
+                  </button>
+                </li>
+              </ul>
+            </transition>
           </div>
         </nav>
       </div>
@@ -35,13 +72,14 @@
         <div class="image-container">
           <Animation
             v-if="amazonGeoJSON"
+            ref="animation"
             :amazonGeoJSON="amazonGeoJSON"
             :width="960"
             :height="600"
-            stroke-color="#20412f"
+            :stroke-color="mapStrokeColor"
             :stroke-width="1.5"
-            fill-color="#ffffff"
-            :fill-opacity="1"
+            :fill-color="mapFillColor"
+            :fill-opacity="mapFillOpacity"
             :fill-fade-duration="0"
             @fill-progress="onFillProgress"
           />
@@ -49,7 +87,7 @@
           <div
             v-if="languageTagline"
             class="geojson-overlay-text"
-            :class="{ 'is-visible': isTextVisible }"
+            :class="{ 'is-visible': isTextVisible, 'no-transition': skipTextTransition }"
             v-html="languageTagline"
           />
           
@@ -101,10 +139,13 @@
 <script>
 import translations from './translations.json'
 import Animation from './components/Animation.vue'
+import { SunIcon, MoonIcon } from '@heroicons/vue/24/solid'
 
 export default {
   components: {
-    Animation
+    Animation,
+    SunIcon,
+    MoonIcon
   },
   name: 'App',
   data() {
@@ -118,6 +159,9 @@ export default {
       polygonsGeoJSON: null,
       fillProgress: 0,
       isTextVisible: false,
+      theme: 'light',
+      isLanguageMenuOpen: false,
+      skipTextTransition: false,
       languages: [
         { code: 'en', label: 'EN' },
         { code: 'es', label: 'ES' },
@@ -132,8 +176,15 @@ export default {
     }
   },
   mounted() {
+    this.initializeTheme()
+    document.addEventListener('click', this.onDocumentClick)
+    document.addEventListener('keydown', this.onDocumentKeydown)
     this.loadGeoJSON()
     this.loadPolygonsGeoJSON()
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.onDocumentClick)
+    document.removeEventListener('keydown', this.onDocumentKeydown)
   },
   computed: {
     t() {
@@ -141,6 +192,10 @@ export default {
     },
     currentYear() {
       return new Date().getFullYear()
+    },
+    currentLanguageLabel() {
+      const active = this.languages.find((lang) => lang.code === this.currentLanguage)
+      return active ? active.label : this.currentLanguage.toUpperCase()
     },
     languageTagline() {
       switch (this.currentLanguage) {
@@ -151,9 +206,75 @@ export default {
         default:
           return 'Collective Knowledge<br />for Conservation and Care<br />across the Amazon'
       }
+    },
+    mapFillColor() {
+      return this.theme === 'dark' ? 'transparent' : '#ffffff'
+    },
+    mapFillOpacity() {
+      return this.theme === 'dark' ? 0 : 1
+    },
+    mapStrokeColor() {
+      return this.theme === 'dark' ? '#ffffff' : '#20412f'
+    }
+  },
+  watch: {
+    activeSection(newSection) {
+      if (newSection === 'home') {
+        this.restartHomeSequence()
+      } else {
+        this.isTextVisible = false
+      }
+    },
+    theme(newTheme) {
+      this.applyTheme(newTheme)
+      if (this.activeSection === 'home') {
+        this.restartHomeSequence({ instantTextHide: true })
+      }
+      try {
+        localStorage.setItem('theme', newTheme)
+      } catch (error) {
+        console.warn('Unable to persist theme preference:', error)
+      }
+    },
+    currentLanguage() {
+      this.isLanguageMenuOpen = false
     }
   },
   methods: {
+    initializeTheme() {
+      let preferredTheme = 'light'
+
+      try {
+        const storedTheme = localStorage.getItem('theme')
+        if (storedTheme === 'light' || storedTheme === 'dark') {
+          preferredTheme = storedTheme
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          preferredTheme = 'dark'
+        }
+      } catch (error) {
+        console.warn('Unable to read stored theme preference:', error)
+      }
+
+      this.theme = preferredTheme
+      this.applyTheme(preferredTheme)
+    },
+    applyTheme(themeName = this.theme) {
+      if (typeof document !== 'undefined') {
+        document.body.classList.toggle('theme-dark', themeName === 'dark')
+      }
+    },
+    hideTextInstantly() {
+      this.skipTextTransition = true
+      this.isTextVisible = false
+      this.$nextTick(() => {
+        requestAnimationFrame(() => {
+          this.skipTextTransition = false
+        })
+      })
+    },
+    toggleTheme() {
+      this.theme = this.theme === 'dark' ? 'light' : 'dark'
+    },
     async loadGeoJSON() {
       try {
         const response = await fetch('/Amazon.geojson')
@@ -199,7 +320,59 @@ export default {
       }
     },
     goHome() {
-      this.activeSection = 'home'
+      if (this.activeSection === 'home') {
+        this.restartHomeSequence()
+      } else {
+        this.activeSection = 'home'
+      }
+    },
+    restartHomeSequence({ instantTextHide = false } = {}) {
+      if (instantTextHide) {
+        this.hideTextInstantly()
+      } else {
+        this.isTextVisible = false
+      }
+      this.fillProgress = 0
+      this.$nextTick(() => {
+        const animationComponent = this.$refs.animation
+        if (animationComponent && typeof animationComponent.restartAnimations === 'function') {
+          animationComponent.restartAnimations()
+        }
+      })
+    },
+    toggleLanguageMenu() {
+      this.isLanguageMenuOpen = !this.isLanguageMenuOpen
+    },
+    openLanguageMenu() {
+      this.isLanguageMenuOpen = true
+    },
+    closeLanguageMenu() {
+      this.isLanguageMenuOpen = false
+    },
+    onLanguageFocusOut(event) {
+      const menu = this.$refs.languageMenu
+      if (!menu) return
+      if (menu.contains(event.relatedTarget)) {
+        return
+      }
+      this.isLanguageMenuOpen = false
+    },
+    selectLanguage(code) {
+      this.currentLanguage = code
+      this.isLanguageMenuOpen = false
+    },
+    onDocumentClick(event) {
+      const menu = this.$refs.languageMenu
+      if (!menu) return
+      if (menu.contains(event.target)) return
+      if (this.isLanguageMenuOpen) {
+        this.closeLanguageMenu()
+      }
+    },
+    onDocumentKeydown(event) {
+      if (event.key === 'Escape' && this.isLanguageMenuOpen) {
+        this.isLanguageMenuOpen = false
+      }
     }
   }
 }
