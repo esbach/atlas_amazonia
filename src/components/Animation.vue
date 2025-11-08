@@ -361,7 +361,7 @@ export default {
       }
 
       if (rect.width <= 600) {
-        multiplier *= 0.3
+        multiplier *= 0.8
       }
 
       return Math.min(multiplier, 6)
